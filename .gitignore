@@ -1,0 +1,7 @@
+# Ignore virtual environment in backend
+backend/.venv/
+
+# Ignore project-specific files in backend
+backend/pyproject.toml
+backend/uv.lock
+backend/.python-version
