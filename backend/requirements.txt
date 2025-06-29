@@ -1,0 +1,7 @@
+langgraph
+langgraph-supervisor
+langchain
+langchain-tavily
+langchain-google-genai
+fastmcp
+
