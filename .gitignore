@@ -5,6 +5,11 @@ backend/.venv/
 backend/pyproject.toml
 backend/uv.lock
 backend/.python-version
+fastapi
+api.md
+flask_doc.md
+langgraph.md
+
 # === GLOBAL IGNORE RULES ===
 
 # System junk

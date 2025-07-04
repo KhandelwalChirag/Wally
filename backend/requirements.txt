@@ -4,4 +4,4 @@ langchain
 langchain-tavily
 langchain-google-genai
 fastmcp
-
+flask
