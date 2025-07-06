@@ -2,9 +2,7 @@
 backend/.venv/
 
 # Ignore project-specific files in backend
-backend/pyproject.toml
-backend/uv.lock
-backend/.python-version
+backend/agents/__pycache__
 fastapi
 api.md
 flask_doc.md

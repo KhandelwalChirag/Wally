@@ -1,9 +1,13 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
-from backend.agents.sharedState import SharedState
+from states import InputInterpreterInputState
+from typing import Literal
+from langgraph.types import Command
 
+from dotenv import load_dotenv
 
-def input_interpreter_agent(state : SharedState) -> dict:
-    
+load_dotenv()
+
+def input_interpreter(state: InputInterpreterInputState) -> Command[Literal["item_expansion_agent", "category_inference_agent"]]:
     user_input = state.get("user_input", "")
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
@@ -25,29 +29,31 @@ def input_interpreter_agent(state : SharedState) -> dict:
         "User input: " + user_input
     )
 
-    response = llm.invoke([{"role" : "user", "content" : prompt}])
+    response = llm.invoke([{"role": "user", "content": prompt}])
 
     try:
         import json
-        parsedOutput = response.content if isinstance(response.content, dict) else response.content.strip()
-        if isinstance(parsedOutput, str):
-            parsedOutput = json.loads(parsedOutput)
-        
-        task_type = parsedOutput.get("task_type")
-        item_list = parsedOutput.get("item_list", [])
-        budget =  parsedOutput.get("budget")
-
+        content = response.content.strip()
+        # Remove markdown code block markers if present
+        if content.startswith('```json'):
+            content = content[7:]
+        if content.endswith('```'):
+            content = content[:-3]
+        parsed = json.loads(content.strip())
+        task_type = parsed.get("task_type")
+        item_list = parsed.get("item_list", [])
+        budget = parsed.get("budget")
     except Exception:
         task_type = None
         item_list = []
         budget = None
-    
-    return {
-        "task_type" : task_type,
-        "item_list" : item_list,
-        "budget" : budget,
+
+    update = {
+        "task_type": task_type,
+        "item_list": item_list,
+        "budget": budget,
     }
-
-
-
-
+    if task_type == "goal_or_dish":
+        return Command(update=update, goto="item_expansion_agent")
+    else:
+        return Command(update=update, goto="category_inference_agent")

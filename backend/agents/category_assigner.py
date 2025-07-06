@@ -1,0 +1,53 @@
+from langchain_google_genai import ChatGoogleGenerativeAI
+from states import OverallState
+from typing import Dict, Any, List
+from langgraph.types import Command
+from dotenv import load_dotenv
+
+load_dotenv()
+
+def category_inference_agent(state: OverallState) -> Dict[str, Any]:
+    """
+    Maps each item to a Walmart category name using LLM reasoning.
+    Returns: {"categories": {item: category_name, ...}}
+    """
+    # Use expanded_items if present, else item_list
+    items: List[str] = state.get("expanded_items") or state.get("item_list") or []
+    if not items:
+        return {"categories": {}}
+
+    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+    prompt = (
+        "You are a Walmart.com shopping assistant. "
+        "Given a list of product names, map each to the most relevant Walmart.com category name. "
+        "Use only top-level or second-level categories as found on Walmart.com. "
+        "Respond ONLY as a JSON object mapping each item to its category name. "
+        "Example:\n"
+        '{\n'
+        '  "milk": "Dairy & Eggs",\n'
+        '  "spaghetti": "Pasta & Noodles",\n'
+        '  "tomato sauce": "Pantry"\n'
+        '}\n\n'
+        f"Items: {items}"
+    )
+
+    response = llm.invoke([{"role": "user", "content": prompt}])
+
+    try:
+        import json
+        content = response.content.strip()
+        # Remove markdown code blocks if present
+        if content.startswith('```json'):
+            content = content[7:]  # Remove ```json
+        if content.endswith('```'):
+            content = content[:-3]  # Remove ```
+        content = content.strip()
+        categories = json.loads(content)
+        if not isinstance(categories, dict):
+            categories = {}
+    except Exception as e:
+        print(f"JSON parsing error: {e}")
+        categories = {}
+
+    return Command(update ={"categories": categories}, goto = "product_search_agent")
+
