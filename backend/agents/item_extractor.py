@@ -40,27 +40,3 @@ def item_expansion_agent(state: OverallState) -> Command[Literal["category_infer
         expanded_items = []
 
     return Command(update={"expanded_items": expanded_items}, goto="category_inference_agent")
-
-
-def main():
-    """Test the item_expansion_agent function"""
-    # Test case 1: Goal/dish expansion
-    test_state = {
-        "user_input": "I want to make spaghetti bolognese",
-        "task_type": "goal_or_dish",
-        "item_list": ["spaghetti bolognese"]
-    }
-    
-    print("Testing item expansion agent...")
-    print(f"Input: {test_state['item_list'][0]}")
-    
-    try:
-        result = item_expansion_agent(test_state)
-        print(f"Expanded items: {result.update.get('expanded_items', [])}")
-        print("Test passed!")
-    except Exception as e:
-        print(f"Test failed: {e}")
-
-
-if __name__ == "__main__":
-    main()

@@ -12,6 +12,7 @@ def category_inference_agent(state: OverallState) -> Dict[str, Any]:
     Returns: {"categories": {item: category_name, ...}}
     """
     # Use expanded_items if present, else item_list
+    
     items: List[str] = state.get("expanded_items") or state.get("item_list") or []
     if not items:
         return {"categories": {}}
@@ -36,11 +37,11 @@ def category_inference_agent(state: OverallState) -> Dict[str, Any]:
     try:
         import json
         content = response.content.strip()
-        # Remove markdown code blocks if present
+
         if content.startswith('```json'):
-            content = content[7:]  # Remove ```json
+            content = content[7:]  
         if content.endswith('```'):
-            content = content[:-3]  # Remove ```
+            content = content[:-3] 
         content = content.strip()
         categories = json.loads(content)
         if not isinstance(categories, dict):

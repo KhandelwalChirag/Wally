@@ -24,27 +24,30 @@ def budget_optimizer_agent(state: OverallState) -> Command[Literal["cart_builder
     items_summary = []
     for prod in products:
         item = prod.get("item")
+        category = prod.get("category")
         options = prod.get("options", [])
-        # Only include minimal info for each option
+        # Include all relevant info for each option
         options_summary = [
             {
                 "name": opt.get("name"),
                 "price": opt.get("price"),
+                "rating": opt.get("rating"),
                 "brand": opt.get("brand"),
+                "category": opt.get("category", category),
                 "description": opt.get("description")
             }
-            for opt in options
+            for opt in options if opt.get("price") is not None
         ]
-        items_summary.append({"item": item, "options": options_summary})
+        items_summary.append({"item": item, "category": category, "options": options_summary})
 
     prompt = (
         "You are a smart shopping assistant. "
-        "Given a list of items, each with several product options (with price, brand, and description), "
+        "Given a list of items, each with several product options (with name, price, rating, brand, category, and description), "
         f"and a total budget of ${budget}, select the best combination of products so that the total price does not exceed the budget. "
-        "Try to select one option per item. If the budget is too low, drop or substitute items as needed. "
-        "Respond ONLY as a JSON array of selected product objects (with name, price, brand, and description). "
+        "Consider both price and rating when making selections. Try to select one option per item. If the budget is too low, drop or substitute items as needed. "
+        "Respond ONLY as a JSON array of selected product objects (with item, name, price, rating, brand, category, and description). "
         "Example:\n"
-        '[{"item": "milk", "name": "Great Value Milk", "price": 3.5, "brand": "Great Value", "description": "1 gallon whole milk"}, ...]\n\n'
+        '[{"item": "milk", "name": "Great Value Milk", "price": 3.5, "rating": 4.2, "brand": "Great Value", "category": "dairy", "description": "1 gallon whole milk"}, ...]\n\n'
         f"Items and options: {items_summary}"
     )
 

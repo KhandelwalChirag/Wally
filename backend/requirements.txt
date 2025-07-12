@@ -5,3 +5,9 @@ langchain-tavily
 langchain-google-genai
 fastmcp
 flask
+langchain-mcp-adapters
+fastmcp
+langchain-google-genai
+langgraph
+python-dotenv
+mcp

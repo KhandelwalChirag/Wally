@@ -24,7 +24,7 @@ class OverallState(TypedDict):
     categories: NotRequired[Dict[str, str]]  # item -> category
 
     # ProductSearchAgent fields
-    products: NotRequired[List[Dict[str, Any]]]  # List of product option dicts
+    products: NotRequired[List[Dict[str, Any]]]  # List of items with multiple product options
 
     # BudgetOptimizerAgent fields
     optimized_products: Optional[List[Dict[str, Any]]]

@@ -11,6 +11,8 @@ except ImportError:
 load_dotenv()
 if "GOOGLE_API_KEY" not in os.environ:
     os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Google AI API key: ")
+if "TAVILY_API_KEY" not in os.environ:
+    os.environ["TAVILY_API_KEY"] = getpass.getpass("Enter your Tavily API key: ")
 
 from states import (
     InputInterpreterInputState,
