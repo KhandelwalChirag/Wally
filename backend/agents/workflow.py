@@ -1,7 +1,9 @@
 from langgraph.graph import StateGraph, START, END
+from database import get_postgres_checkpointer
 
 import getpass
 import os
+import uuid
 from dotenv import load_dotenv
 try:
     from IPython.display import Image, display
@@ -13,6 +15,8 @@ if "GOOGLE_API_KEY" not in os.environ:
     os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Google AI API key: ")
 if "TAVILY_API_KEY" not in os.environ:
     os.environ["TAVILY_API_KEY"] = getpass.getpass("Enter your Tavily API key: ")
+if "DATABASE_URL" not in os.environ:
+    os.environ["DATABASE_URL"] = "postgresql://postgres:password@localhost:5432/smart_cart_db"
 
 from .states import (
     InputInterpreterInputState,
@@ -56,5 +60,9 @@ builder.add_edge("cart_builder_agent", END)
 
 # All other transitions are handled by Command-based handoffs in the agent nodes
 
-graph = builder.compile()
+# Create PostgreSQL checkpointer for saving graph state
+checkpointer = get_postgres_checkpointer()
+
+# Update graph compilation to use the checkpointer
+graph = builder.compile(checkpointer=checkpointer)
 

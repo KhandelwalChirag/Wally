@@ -1,7 +1,8 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from .states import OverallState
 from typing import Dict, Any, List, Optional, Literal
-from langgraph.types import Command
+from langgraph.types import Command, interrupt
+from .personalization import personalize_product_selection
 
 from dotenv import load_dotenv
 
@@ -71,6 +72,15 @@ def budget_optimizer_agent(state: OverallState) -> Command[Literal["cart_builder
         print(f"JSON parsing error: {e}")
         optimized_products = []
 
-    return Command(update={"optimized_products": optimized_products}, goto="cart_builder_agent")
+    # Add human review interrupt
+    if optimized_products:
+        optimized_products = interrupt({
+            "type": "optimization_review",
+            "optimized_products": optimized_products,
+            "budget": budget,
+            "message": "Please review the optimized product selections."
+        })
+    
+    return Command(update={"optimized_products": optimized_products, "interrupt_type": "optimization_review"}, goto="cart_builder_agent")
 
 

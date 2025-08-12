@@ -1,12 +1,12 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from .states import OverallState
-from typing import Dict, Any, List
-from langgraph.types import Command
+from typing import Dict, Any, List, Literal
+from langgraph.types import Command, interrupt
 from dotenv import load_dotenv
 
 load_dotenv()
 
-def category_inference_agent(state: OverallState) -> Dict[str, Any]:
+def category_inference_agent(state: OverallState) -> Command[Literal["product_search_agent"]]:
     """
     Maps each item to a Walmart category name using LLM reasoning.
     Returns: {"categories": {item: category_name, ...}}
@@ -17,7 +17,7 @@ def category_inference_agent(state: OverallState) -> Dict[str, Any]:
     print(f"Category inference received items: {items}")
     if not items:
         print("No items found, returning empty categories")
-        return {"categories": {}}
+        return Command(update={"categories": {}}, goto="product_search_agent")
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
     prompt = (
@@ -53,5 +53,15 @@ def category_inference_agent(state: OverallState) -> Dict[str, Any]:
         categories = {}
 
     print(f"Category inference result: {categories}")
-    return Command(update={"categories": categories}, goto="product_search_agent")
+    
+    # Add human review interrupt
+    if items:
+        categories = interrupt({
+            "type": "category_review",
+            "items": items,
+            "suggested_categories": categories,
+            "message": "Please review the category assignments for these items."
+        })
+    
+    return Command(update={"categories": categories, "interrupt_type": "category_review"}, goto="product_search_agent")
 

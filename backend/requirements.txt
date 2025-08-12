@@ -10,3 +10,7 @@ langchain-mcp-adapters
 python-dotenv
 mcp
 pydantic
+python-multipart
+langgraph-checkpoint-postgres
+psycopg2-binary
+sqlalchemy

@@ -1,7 +1,9 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from .states import InputInterpreterInputState
-from typing import Literal
+from typing import Literal, Dict, Any
 from langgraph.types import Command
+from .user_manager import user_manager
+import uuid
 
 from dotenv import load_dotenv
 
@@ -9,7 +11,19 @@ load_dotenv()
 
 def input_interpreter(state: InputInterpreterInputState) -> Command[Literal["item_expansion_agent", "category_inference_agent"]]:
     user_input = state.get("user_input", "")
-    print(f"Input interpreter received: {user_input}")
+    user_id = state.get("user_id", "")
+    print(f"Input interpreter received: {user_input} from user: {user_id}")
+    
+    # Generate thread_id for this conversation
+    thread_id = str(uuid.uuid4())
+    
+    # Get user preferences if user is authenticated
+    user_preferences = {}
+    purchase_history = []
+    if user_id:
+        user_data = user_manager.get_user_data(user_id)
+        user_preferences = user_data.get("preferences", {})
+        purchase_history = user_data.get("purchase_history", [])
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
     prompt = (
@@ -53,6 +67,10 @@ def input_interpreter(state: InputInterpreterInputState) -> Command[Literal["ite
         "task_type": task_type,
         "item_list": item_list,
         "budget": budget,
+        "thread_id": thread_id,
+        "user_id": user_id,
+        "user_preferences": user_preferences,
+        "purchase_history": purchase_history
     }
     print(f"Input interpreter parsed: {update}")
     
