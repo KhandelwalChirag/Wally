@@ -1,5 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
-from states import OverallState
+from .states import OverallState
 from typing import Dict, Any, List
 from langgraph.types import Command
 from dotenv import load_dotenv
@@ -14,7 +14,9 @@ def category_inference_agent(state: OverallState) -> Dict[str, Any]:
     # Use expanded_items if present, else item_list
     
     items: List[str] = state.get("expanded_items") or state.get("item_list") or []
+    print(f"Category inference received items: {items}")
     if not items:
+        print("No items found, returning empty categories")
         return {"categories": {}}
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
@@ -50,5 +52,6 @@ def category_inference_agent(state: OverallState) -> Dict[str, Any]:
         print(f"JSON parsing error: {e}")
         categories = {}
 
-    return Command(update ={"categories": categories}, goto = "product_search_agent")
+    print(f"Category inference result: {categories}")
+    return Command(update={"categories": categories}, goto="product_search_agent")
 

@@ -1,5 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
-from states import InputInterpreterInputState
+from .states import InputInterpreterInputState
 from typing import Literal
 from langgraph.types import Command
 
@@ -9,6 +9,7 @@ load_dotenv()
 
 def input_interpreter(state: InputInterpreterInputState) -> Command[Literal["item_expansion_agent", "category_inference_agent"]]:
     user_input = state.get("user_input", "")
+    print(f"Input interpreter received: {user_input}")
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
     prompt = (
@@ -53,7 +54,11 @@ def input_interpreter(state: InputInterpreterInputState) -> Command[Literal["ite
         "item_list": item_list,
         "budget": budget,
     }
+    print(f"Input interpreter parsed: {update}")
+    
     if task_type == "goal_or_dish":
+        print("Routing to item_expansion_agent")
         return Command(update=update, goto="item_expansion_agent")
     else:
+        print("Routing to category_inference_agent")
         return Command(update=update, goto="category_inference_agent")

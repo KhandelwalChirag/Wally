@@ -1,12 +1,17 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
-from states import OverallState
+from .states import OverallState
 from typing import Dict, Any, List, Literal
 from langgraph.types import Command
 from langchain_tavily import TavilySearch
 import json
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 def product_search_agent(state: OverallState) -> Command[Literal["budget_optimizer_agent"]]:
     categories = state.get("categories", {})
+    print(f"Product search received categories: {categories}")
     products = []
     
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
@@ -84,4 +89,5 @@ Example format:
             "options": product_options
         })
     
+    print(products)
     return Command(update={"products": products}, goto="budget_optimizer_agent")

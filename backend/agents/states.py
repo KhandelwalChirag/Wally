@@ -8,6 +8,7 @@ class InputInterpreterInputState(TypedDict):
 # Output schema: what the graph will return as output
 class InputInterpreterOutputState(TypedDict):
     cart_url: str
+    optimized_products: Optional[List[Dict[str, Any]]]
 
 # Overall state: union of all fields needed by all agents in the flow
 class OverallState(TypedDict):
@@ -27,7 +28,7 @@ class OverallState(TypedDict):
     products: NotRequired[List[Dict[str, Any]]]  # List of items with multiple product options
 
     # BudgetOptimizerAgent fields
-    optimized_products: Optional[List[Dict[str, Any]]]
+    optimized_products: Optional[List[Dict[str, int]]]
 
     # CartBuilderAgent fields
     cart_url: NotRequired[str]

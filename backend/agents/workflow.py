@@ -14,17 +14,17 @@ if "GOOGLE_API_KEY" not in os.environ:
 if "TAVILY_API_KEY" not in os.environ:
     os.environ["TAVILY_API_KEY"] = getpass.getpass("Enter your Tavily API key: ")
 
-from states import (
+from .states import (
     InputInterpreterInputState,
     InputInterpreterOutputState,
     OverallState,
 )
-from input_interpreter import input_interpreter
-from item_extractor import item_expansion_agent
-from category_assigner import category_inference_agent
-from product_fetcher import product_search_agent
-from budget_optimizer import budget_optimizer_agent
-from cart_builder import cart_builder_agent
+from .input_interpreter import input_interpreter
+from .item_extractor import item_expansion_agent
+from .category_assigner import category_inference_agent
+from .product_fetcher import product_search_agent
+from .budget_optimizer import budget_optimizer_agent
+from .cart_builder import cart_builder_agent
 
 # Build the graph with input and output schemas specified
 builder = StateGraph(
@@ -58,14 +58,3 @@ builder.add_edge("cart_builder_agent", END)
 
 graph = builder.compile()
 
-# Visualize the compiled graph
-try:
-    from IPython.display import Image, display
-    display(Image(graph.get_graph().draw_mermaid_png()))
-except ImportError:
-    print("IPython not available. Install with: pip install ipython")
-except Exception as e:
-    print(f"Graph visualization failed: {e}")
-
-# Example usage:
-result = graph.invoke({"user_input": "I want to make pasta for $20"})

@@ -1,5 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
-from states import OverallState
+from .states import OverallState
 from typing import Dict, Any, List, Optional, Literal
 from langgraph.types import Command
 
@@ -14,8 +14,10 @@ def budget_optimizer_agent(state: OverallState) -> Command[Literal["cart_builder
     """
     products: List[Dict[str, Any]] = state.get("products", [])
     budget: Optional[float] = state.get("budget")
+    print(f"Budget optimizer received {len(products)} products, budget: {budget}")
 
     if not products or budget is None:
+        print("No products or budget, returning empty")
         return Command(update={"optimized_products": []}, goto="cart_builder_agent")
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
@@ -70,3 +72,5 @@ def budget_optimizer_agent(state: OverallState) -> Command[Literal["cart_builder
         optimized_products = []
 
     return Command(update={"optimized_products": optimized_products}, goto="cart_builder_agent")
+
+

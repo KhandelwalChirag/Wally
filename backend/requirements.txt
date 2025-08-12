@@ -4,10 +4,9 @@ langchain
 langchain-tavily
 langchain-google-genai
 fastmcp
-flask
+fastapi
+uvicorn[standard]
 langchain-mcp-adapters
-fastmcp
-langchain-google-genai
-langgraph
 python-dotenv
 mcp
+pydantic
