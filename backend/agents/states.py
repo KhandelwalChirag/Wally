@@ -9,9 +9,12 @@ class InputInterpreterInputState(TypedDict):
 # Output schema: what the graph will return as output
 class InputInterpreterOutputState(TypedDict):
     cart_url: str
+<<<<<<< HEAD
     optimized_products: Optional[List[Dict[str, Any]]]
     thread_id: NotRequired[str]  # Added for human-in-the-loop functionality
     interrupt: NotRequired[Dict[str, Any]]  # Added for human-in-the-loop functionality
+=======
+>>>>>>> parent of 288dd3f (extra changes - might work might not)
 
 # Overall state: union of all fields needed by all agents in the flow
 class OverallState(TypedDict):

@@ -1,7 +1,13 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
+<<<<<<< HEAD
 from .states import OverallState
 from typing import Dict, Any, List, Literal
 from langgraph.types import Command, interrupt
+=======
+from states import OverallState
+from typing import Dict, Any, List
+from langgraph.types import Command
+>>>>>>> parent of 288dd3f (extra changes - might work might not)
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,10 +20,13 @@ def category_inference_agent(state: OverallState) -> Command[Literal["product_se
     # Use expanded_items if present, else item_list
     
     items: List[str] = state.get("expanded_items") or state.get("item_list") or []
-    print(f"Category inference received items: {items}")
     if not items:
+<<<<<<< HEAD
         print("No items found, returning empty categories")
         return Command(update={"categories": {}}, goto="product_search_agent")
+=======
+        return {"categories": {}}
+>>>>>>> parent of 288dd3f (extra changes - might work might not)
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
     prompt = (
@@ -52,6 +61,7 @@ def category_inference_agent(state: OverallState) -> Command[Literal["product_se
         print(f"JSON parsing error: {e}")
         categories = {}
 
+<<<<<<< HEAD
     print(f"Category inference result: {categories}")
     
     # Add human review interrupt
@@ -64,4 +74,7 @@ def category_inference_agent(state: OverallState) -> Command[Literal["product_se
         })
     
     return Command(update={"categories": categories, "interrupt_type": "category_review"}, goto="product_search_agent")
+=======
+    return Command(update ={"categories": categories}, goto = "product_search_agent")
+>>>>>>> parent of 288dd3f (extra changes - might work might not)
 

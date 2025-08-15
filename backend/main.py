@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from fastapi import FastAPI, Depends, HTTPException, status, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -10,9 +11,13 @@ from langgraph.types import Command
 import os
 import uuid
 from dotenv import load_dotenv
+=======
+from flask import Flask
+>>>>>>> parent of 288dd3f (extra changes - might work might not)
 
-load_dotenv()
+app = Flask(__name__)
 
+<<<<<<< HEAD
 # Initialize database on startup
 init_database()
 
@@ -220,3 +225,8 @@ def root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+=======
+@app.route("/")
+def hello_world():
+    return "<p> Hello World ! </p>"
+>>>>>>> parent of 288dd3f (extra changes - might work might not)

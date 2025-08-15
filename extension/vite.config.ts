@@ -8,12 +8,4 @@ export default defineConfig({
     vue(),
     tailwindcss()
   ],
-  build: {
-    rollupOptions: {
-      input: {
-        main: 'index.html',
-        popup: 'popup.html'
-      }
-    }
-  }
 })

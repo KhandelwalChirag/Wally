@@ -1,6 +1,11 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
+<<<<<<< HEAD
 from .states import InputInterpreterInputState
 from typing import Literal, Dict, Any
+=======
+from states import InputInterpreterInputState
+from typing import Literal
+>>>>>>> parent of 288dd3f (extra changes - might work might not)
 from langgraph.types import Command
 from .user_manager import user_manager
 import uuid
@@ -11,6 +16,7 @@ load_dotenv()
 
 def input_interpreter(state: InputInterpreterInputState) -> Command[Literal["item_expansion_agent", "category_inference_agent"]]:
     user_input = state.get("user_input", "")
+<<<<<<< HEAD
     user_id = state.get("user_id", "")
     print(f"Input interpreter received: {user_input} from user: {user_id}")
     
@@ -24,6 +30,8 @@ def input_interpreter(state: InputInterpreterInputState) -> Command[Literal["ite
         user_data = user_manager.get_user_data(user_id)
         user_preferences = user_data.get("preferences", {})
         purchase_history = user_data.get("purchase_history", [])
+=======
+>>>>>>> parent of 288dd3f (extra changes - might work might not)
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
     prompt = (
@@ -72,11 +80,7 @@ def input_interpreter(state: InputInterpreterInputState) -> Command[Literal["ite
         "user_preferences": user_preferences,
         "purchase_history": purchase_history
     }
-    print(f"Input interpreter parsed: {update}")
-    
     if task_type == "goal_or_dish":
-        print("Routing to item_expansion_agent")
         return Command(update=update, goto="item_expansion_agent")
     else:
-        print("Routing to category_inference_agent")
         return Command(update=update, goto="category_inference_agent")

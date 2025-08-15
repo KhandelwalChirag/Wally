@@ -4,13 +4,19 @@ langchain
 langchain-tavily
 langchain-google-genai
 fastmcp
-fastapi
-uvicorn[standard]
+flask
 langchain-mcp-adapters
+fastmcp
+langchain-google-genai
+langgraph
 python-dotenv
+<<<<<<< HEAD
 mcp
 pydantic
 python-multipart
 langgraph-checkpoint-postgres
 psycopg2-binary
 sqlalchemy
+=======
+mcp
+>>>>>>> parent of 288dd3f (extra changes - might work might not)
