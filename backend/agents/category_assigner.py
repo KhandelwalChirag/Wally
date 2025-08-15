@@ -11,8 +11,6 @@ def category_inference_agent(state: OverallState) -> Command[Literal["product_se
     Maps each item to a Walmart category name using LLM reasoning.
     Returns: {"categories": {item: category_name, ...}}
     """
-    # Use expanded_items if present, else item_list
-    
     items: List[str] = state.get("expanded_items") or state.get("item_list") or []
     if not items:
         print("No items found, returning empty categories")

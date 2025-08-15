@@ -10,12 +10,7 @@ load_dotenv()
 
 def input_interpreter(state: InputInterpreterInputState) -> Command[Literal["item_expansion_agent", "category_inference_agent"]]:
     user_input = state.get("user_input", "")
-    user_id = state.get("user_id", "")
-    print(f"Input interpreter received: {user_input} from user: {user_id}")
-    
-    # Generate thread_id for this conversation
-    thread_id = str(uuid.uuid4())
-    
+
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
     prompt = (
         "You are a highly skilled AI assistant for a smart shopping cart system. "
@@ -40,7 +35,6 @@ def input_interpreter(state: InputInterpreterInputState) -> Command[Literal["ite
     try:
         import json
         content = response.content.strip()
-        # Remove markdown code block markers if present
         if content.startswith('```json'):
             content = content[7:]
         if content.endswith('```'):
@@ -58,10 +52,6 @@ def input_interpreter(state: InputInterpreterInputState) -> Command[Literal["ite
         "task_type": task_type,
         "item_list": item_list,
         "budget": budget,
-        "thread_id": thread_id,
-        "user_id": user_id,
     }
-    if task_type == "goal_or_dish":
-        return Command(update=update, goto="item_expansion_agent")
-    else:
-        return Command(update=update, goto="category_inference_agent")
+    
+    return Command(update=update)

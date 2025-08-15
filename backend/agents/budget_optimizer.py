@@ -19,7 +19,6 @@ def budget_optimizer_agent(state: OverallState) -> Dict[str, Any]:
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
-    # Prepare a summary of product options for the LLM
     items_summary = []
     for prod in products:
         item = prod.get("item")
@@ -62,5 +61,4 @@ def budget_optimizer_agent(state: OverallState) -> Dict[str, Any]:
         print(f"JSON parsing error in budget optimizer: {e}")
         optimized_products = []
 
-    # Return the optimized products directly
     return {"optimized_products": optimized_products}

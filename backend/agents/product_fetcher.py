@@ -14,7 +14,6 @@ def product_search_agent(state: OverallState) -> Command[Literal["budget_optimiz
     
     def fetch_products_for_item(item: str, category: str) -> List[Dict[str, Any]]:
         
-        # Personalize the search query based on user preferences
         base_query = f"{item} {category} site:walmart.com price rating"
         search_results = tavily_search.invoke(base_query)
         
@@ -51,19 +50,17 @@ Example format:
             valid_options = []
             for option in product_options:
                 if isinstance(option, dict) and option.get('name') and option.get('price'):
-                    # Ensure price is a number
                     try:
                         option['price'] = float(option['price'])
                         valid_options.append(option)
                     except (ValueError, TypeError):
                         continue
             
-            return valid_options[:5]  # Limit to 5 options
+            return valid_options[:5]
             
         except Exception as e:
             print(f"Error extracting products for {item}: {e}")
 
-            # Fallback: create mock products if extraction fails
             return [{
                 "name": f"{item.title()} - Option 1",
                 "price": 10.99,
@@ -73,7 +70,6 @@ Example format:
                 "description": f"Quality {item} product"
             }]
     
-    # Fetch products for each item
     for item, category in categories.items():
         product_options = fetch_products_for_item(item, category)
         

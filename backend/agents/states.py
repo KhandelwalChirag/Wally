@@ -1,15 +1,14 @@
 from typing_extensions import TypedDict, NotRequired, Literal, Optional
 from typing import List, Dict, Any
 
-# Input schema: what the graph expects as input
 class InputInterpreterInputState(TypedDict):
     user_input: str
-    
-# Output schema: what the graph will return as output
-class InputInterpreterOutputState(TypedDict):
-    cart_url: str
+    user_feedback: NotRequired[str]
 
-# Overall state: union of all fields needed by all agents in the flow
+
+class InputInterpreterOutputState(TypedDict):
+    optimized_products: Optional[List[Dict[str, Any]]]
+
 class OverallState(TypedDict):
     # InputInterpreter fields
     user_input: str

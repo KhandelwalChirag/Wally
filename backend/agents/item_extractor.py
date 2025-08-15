@@ -18,8 +18,10 @@ def item_expansion_agent(state: OverallState) -> Dict[str, Any]:
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
     goal = item_list[0] if isinstance(item_list, list) and item_list else ""
     prompt = (
-        "You are an expert assistant. Given a user's goal or dish, "
-        "expand it into a flat list of specific items (ingredients and tools if needed). "
+        "You are an expert shopping assistant. Given a user's goal or dish, "
+        "expand it into a list of specific, purchasable grocery items. "
+        "Focus on the essential ingredients that a user would typically need to buy for this dish. "
+        "Exclude common household items that are likely to be on hand, such as water, salt, pepper, and basic cooking oils, unless they are a specialty item (e.g., 'truffle oil'). "
         "Return ONLY a JSON array of item names. No extra text.\n\n"
         f"Goal or dish: {goal}\n"
         'Example response: ["spaghetti", "tomato sauce", "ground beef", "onion", "garlic"]'
