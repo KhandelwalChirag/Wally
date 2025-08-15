@@ -1,6 +1,7 @@
 # Ignore virtual environment in backend
 backend/.venv/
-
+__pycache__
+venv
 # Ignore project-specific files in backend
 backend/agents/__pycache__
 fastapi

@@ -1,34 +1,15 @@
 from langgraph.graph import StateGraph, START, END
-from database import get_postgres_checkpointer
-
-import getpass
-import os
-import uuid
-from dotenv import load_dotenv
-try:
-    from IPython.display import Image, display
-except ImportError:
-    pass
-
-load_dotenv()
-if "GOOGLE_API_KEY" not in os.environ:
-    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Google AI API key: ")
-if "TAVILY_API_KEY" not in os.environ:
-    os.environ["TAVILY_API_KEY"] = getpass.getpass("Enter your Tavily API key: ")
-if "DATABASE_URL" not in os.environ:
-    os.environ["DATABASE_URL"] = "postgresql://postgres:password@localhost:5432/smart_cart_db"
-
-from states import (
+from agents.states import (
     InputInterpreterInputState,
     InputInterpreterOutputState,
     OverallState,
 )
-from input_interpreter import input_interpreter
-from item_extractor import item_expansion_agent
-from category_assigner import category_inference_agent
-from product_fetcher import product_search_agent
-from budget_optimizer import budget_optimizer_agent
-from cart_builder import cart_builder_agent
+from agents.input_interpreter import input_interpreter
+from agents.item_extractor import item_expansion_agent
+from agents.category_assigner import category_inference_agent
+from agents.product_fetcher import product_search_agent
+from agents.budget_optimizer import budget_optimizer_agent
+from agents.cart_builder import cart_builder_agent
 
 # Build the graph with input and output schemas specified
 builder = StateGraph(
@@ -56,24 +37,16 @@ def route_after_input_interpreter(state: OverallState):
         return "category_inference_agent"
 
 builder.add_conditional_edges("input_interpreter", route_after_input_interpreter)
+
+# Add the missing sequential edges
+builder.add_edge("item_expansion_agent", "category_inference_agent")
+builder.add_edge("category_inference_agent", "product_search_agent")
+builder.add_edge("product_search_agent", "budget_optimizer_agent")
+builder.add_edge("budget_optimizer_agent", "cart_builder_agent")
 builder.add_edge("cart_builder_agent", END)
 
-# All other transitions are handled by Command-based handoffs in the agent nodes
+graph = builder.compile()
 
-# Create PostgreSQL checkpointer for saving graph state
-checkpointer = get_postgres_checkpointer()
-
-# Update graph compilation to use the checkpointer
-graph = builder.compile(checkpointer=checkpointer)
-
-# Visualize the compiled graph
-try:
-    from IPython.display import Image, display
-    display(Image(graph.get_graph().draw_mermaid_png()))
-except ImportError:
-    print("IPython not available. Install with: pip install ipython")
-except Exception as e:
-    print(f"Graph visualization failed: {e}")
-
-# Example usage:
-result = graph.invoke({"user_input": "I want to make pasta for $20"})
+# Example invocation
+# result = graph.invoke({"user_input": "I want to make pasta for $20"})
+# print(result)

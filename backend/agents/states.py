@@ -4,17 +4,10 @@ from typing import List, Dict, Any
 # Input schema: what the graph expects as input
 class InputInterpreterInputState(TypedDict):
     user_input: str
-    user_id: NotRequired[str]  # Added for user authentication
-
+    
 # Output schema: what the graph will return as output
 class InputInterpreterOutputState(TypedDict):
     cart_url: str
-<<<<<<< HEAD
-    optimized_products: Optional[List[Dict[str, Any]]]
-    thread_id: NotRequired[str]  # Added for human-in-the-loop functionality
-    interrupt: NotRequired[Dict[str, Any]]  # Added for human-in-the-loop functionality
-=======
->>>>>>> parent of 288dd3f (extra changes - might work might not)
 
 # Overall state: union of all fields needed by all agents in the flow
 class OverallState(TypedDict):
@@ -24,11 +17,6 @@ class OverallState(TypedDict):
     item_list: NotRequired[List[str]]
     budget: NotRequired[float]
     
-    # User-related fields for personalization
-    user_id: NotRequired[str]
-    user_preferences: NotRequired[Dict[str, Any]]
-    purchase_history: NotRequired[List[Dict[str, Any]]]
-
     # ItemExpansionAgent fields
     expanded_items: NotRequired[List[str]]
 
@@ -44,6 +32,3 @@ class OverallState(TypedDict):
     # CartBuilderAgent fields
     cart_url: NotRequired[str]
     
-    # Human-in-the-loop fields
-    thread_id: NotRequired[str]
-    interrupt_type: NotRequired[str]

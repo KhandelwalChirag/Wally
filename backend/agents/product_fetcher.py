@@ -1,30 +1,22 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
-from states import OverallState
+from agents.states import OverallState
 from typing import Dict, Any, List, Literal
 from langgraph.types import Command, interrupt
 from langchain_tavily import TavilySearch
-from .personalization import personalize_product_search, personalize_product_selection
 import json
 
 def product_search_agent(state: OverallState) -> Command[Literal["budget_optimizer_agent"]]:
     categories = state.get("categories", {})
-<<<<<<< HEAD
-    user_preferences = state.get("user_preferences", {})
-    print(f"Product search received categories: {categories}")
-    print(f"User preferences: {user_preferences}")
-=======
->>>>>>> parent of 288dd3f (extra changes - might work might not)
     products = []
     
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
-    tavily_search = TavilySearch(max_results=10)
+    tavily_search = TavilySearch(max_results=50)
     
     def fetch_products_for_item(item: str, category: str) -> List[Dict[str, Any]]:
         
         # Personalize the search query based on user preferences
         base_query = f"{item} {category} site:walmart.com price rating"
-        search_query = personalize_product_search(base_query, user_preferences)
-        search_results = tavily_search.invoke(search_query)
+        search_results = tavily_search.invoke(base_query)
         
         prompt = f"""
 You are a product information extractor. From the following search results about "{item}" from Walmart, 
@@ -91,26 +83,4 @@ Example format:
             "options": product_options
         })
     
-<<<<<<< HEAD
-    print(products)
-    
-    # Personalize product selection based on user preferences
-    if products and user_preferences:
-        for i, product in enumerate(products):
-            if "options" in product and product["options"]:
-                product["options"] = personalize_product_selection(product["options"], user_preferences)
-                products[i] = product
-    
-    # Add human review interrupt
-    if products:
-        products = interrupt({
-            "type": "product_review",
-            "products": products,
-            "message": "Please review the product options found for each item."
-        })
-    
-    return Command(update={"products": products, "interrupt_type": "product_review"}, goto="budget_optimizer_agent")
-    
-=======
     return Command(update={"products": products}, goto="budget_optimizer_agent")
->>>>>>> parent of 288dd3f (extra changes - might work might not)
