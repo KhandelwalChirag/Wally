@@ -1,8 +1,33 @@
 import argparse
 import asyncio
 import json
+import os
+import shutil
 from agents.workflow import graph
-from langgraph.types import Command 
+from langgraph.types import Command
+from dotenv import load_dotenv
+
+def setup_api_keys():
+    """
+    Checks for a .env file and prompts the user for API keys if it doesn't exist.
+    """
+    if not os.path.exists(".env"):
+        print("API keys not found. Please enter your API keys.")
+        google_api_key = input("Enter your GOOGLE_API_KEY: ").strip()
+        tavily_api_key = input("Enter your TAVILY_API_KEY: ").strip()
+
+        # Create a .env file from the example
+        shutil.copy(".env.example", ".env")
+
+        with open(".env", "w") as f:
+            f.write(f"GOOGLE_API_KEY={google_api_key}\n")
+            f.write(f"TAVILY_API_KEY={tavily_api_key}\n")
+
+        print(".env file created successfully.")
+    
+    # Load the .env file
+    load_dotenv()
+
 
 async def run_agent_cli(user_input: str, user_id: str | None = None):
     """
@@ -31,7 +56,7 @@ async def run_agent_cli(user_input: str, user_id: str | None = None):
         if user_action == "accept":
             resume_payload = {"action": "accept"}
             result = graph.invoke(Command(resume=resume_payload), config=config)
-        
+
         elif user_action == "edit":
             print("Please provide the new list as a valid JSON array (e.g., [\"pasta\", \"sauce\", \"cheese\"])")
             while True:
@@ -56,14 +81,20 @@ async def run_agent_cli(user_input: str, user_id: str | None = None):
 
 def main():
     """
-    Parses command-line arguments and runs the agent.
+    Sets up API keys, prompts for user input, and runs the agent.
     """
+    setup_api_keys()
+    
     parser = argparse.ArgumentParser(description="Run the Smart Cart Agent from the command line.")
-    parser.add_argument("user_input", type=str, help="The user's request (e.g., 'I want to make pasta for $20').")
     parser.add_argument("--user-id", type=str, help="An optional user ID to maintain state.", default=None)
     args = parser.parse_args()
-    asyncio.run(run_agent_cli(args.user_input, args.user_id))
 
+    while True:
+        user_input = input("Please enter your request (or type 'exit' to quit): ").strip()
+        if user_input.lower() == 'exit':
+            break
+        
+        asyncio.run(run_agent_cli(user_input, args.user_id))
 
 if __name__ == '__main__':
     main()
